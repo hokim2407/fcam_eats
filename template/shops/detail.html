@@ -1,0 +1,282 @@
+{% set title = "패캠이츠 상점 디테일" %} {% extends "layout/client.html" %} {%
+block content %}
+<!-- restaurant detail -->
+<main class="container detail">
+  <section
+    class="row img-slider"
+    {%
+    if
+    not
+    shop.thumbnail
+    %}
+    style="background-image: url('/static/images/thumb.jpg')"
+    {%
+    else
+    %}
+    style="background-image: url('/uploads/{{ shop.thumbnail }}');"
+    {%
+    endif
+    %}
+  >
+    <div class="col-xs-12">
+      <h2 class="a11y-hidden">이미지 슬라이더</h2>
+      <button type="button" class="btn-prev">
+        <i class="fa fa-angle-left" aria-hidden="true"></i>
+        <span class="a11y-hidden">이전</span>
+      </button>
+      <button type="button" class="btn-next">
+        <i class="fa fa-angle-right" aria-hidden="true"></i>
+        <span class="a11y-hidden">다음</span>
+      </button>
+      <ul class="indicator">
+        <li class="active"><a href="">1번째</a></li>
+        <li><a href="">2번째</a></li>
+        <li><a href="">3번째</a></li>
+        <li><a href="">4번째</a></li>
+        <li><a href="">5번째</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="row restaurant-info">
+    <div class="col-xs-12 name">
+      <h2 class="h6">{{ shop.name }}</h2>
+      <button type="button" class="btn btn-link btn-ghost btn-share">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+        <span class="a11y-hidden">공유하기</span>
+      </button>
+    </div>
+    <ul class="col-xs-12 info1 body1">
+      <li>{{ shop.address }} / {{ shop.location }}</li>
+      <li>{{ shop.phone }}</li>
+      <li>
+        {% if isLogin %}
+        <a
+          id="handleLike"
+          shop_id="{{shop.id}}"
+          type="button"
+          class="btn btn-link btn-like {% if active %} active {%endif%}"
+        >
+          <i class="fa fa-heart" aria-hidden="true"></i>
+          <span>{{countLike}}</span>
+        </a>
+        {%else%}
+        <a
+          href="/accounts/login"
+          shop_id="{{shop.id}}"
+          type="button"
+          class="btn btn-link btn-like"
+        >
+          <i class="fa fa-heart" aria-hidden="true"></i>
+          <span>{{countLike}}</span>
+        </a>
+        {%endif%}
+      </li>
+    </ul>
+  </section>
+
+  <ul class="col-xs-12 info1 body1">
+    {%for tag in shop.Tag %}
+    <li><a href="/?name={{tag.name}}">#{{tag.name}}</a></li>
+    {% endfor %}
+  </ul>
+
+  <section class="row menu-board">
+    <div class="col-xs-12">
+      <div class="menu-box">
+        <h2 class="sub-title1 font-nanum title">대표 메뉴</h2>
+        <ul class="menu-list">
+          {% for menu in shop.Menu %}
+          <li>
+            <a
+              href="#"
+              menu_id="{{ menu.id }}"
+              price="{{ menu.price }}"
+              name="{{ menu.name }}"
+              class="getCart"
+            >
+              <h3 class="sub-title2">{{ menu.name }}</h3>
+              <p class="body2">{{ menu.price }}원</p>
+            </a>
+          </li>
+          {% else %}
+          <li>
+            <a href="">
+              <h3 class="sub-title2">메뉴가 없습니다.</h3>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+  <section class="row restaurant-info2 body2">
+    <ul class="col-xs-12">
+      <li>
+        <i class="fa fa-check" aria-hidden="true"></i>
+        <span class="textPrimary">위치</span>
+        <span>{{ shop.address }} / {{ shop.location }}</span>
+      </li>
+      <li>
+        <i class="fa fa-check" aria-hidden="true"></i>
+        <span class="textPrimary">운영시간</span>
+        <span>{{ shop.open_time }}</span>
+      </li>
+      <li>
+        <i class="fa fa-check" aria-hidden="true"></i>
+        <span class="textPrimary">연락처</span>
+        <span>{{ shop.cell_phone }}</span>
+      </li>
+    </ul>
+  </section>
+  <section class="row restaurant-map">
+    <div class="col-xs-12">
+      {% if shop.address and shop.geo %}
+      <div
+        id="map_area"
+        style="width: 100%; height: 350px; margin: 10px 0 50px 0"
+      ></div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+
+<!-- cart -->
+<a class="btn-cart">
+  <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+  <i class="cart-item-counter">{{ cartLength }}</i>
+</a>
+<script src="/static/js/kakaomap.js"></script>
+<script>
+  {% if shop.address and shop.geo %}
+     var coord = new kakao.maps.LatLng(
+                  {{ shop.geo.coordinates[1] }},
+                  {{ shop.geo.coordinates[0] }}
+              );
+
+        var mapContainer = new kakao.maps.Map(
+          document.getElementById("map_area"),
+          {
+              center:coord, // 지도의 중심좌표
+              level: 3 // 지도의 확대 레벨
+          }
+      );
+
+    // 마커이미지의 주소입니다
+         var imageSrc = "/static/images/icon_pointer.png";
+
+         // 마커 이미지의 이미지 크기 입니다
+         var imageSize = new kakao.maps.Size(40, 46);
+
+         // 마커 이미지를 생성합니다
+         var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+         // 결과값으로 받은 위치를 마커로 표시합니다
+         var marker = new kakao.maps.Marker({
+           map: mapContainer,
+           position: coord,
+           image: markerImage
+         });
+
+         // 인포윈도우로 장소에 대한 설명을 표시합니다
+         var infowindow = new kakao.maps.InfoWindow({
+           content:
+             '<div style="width:150px;text-align:center;padding:6px 2px;"> {{shop.name}}</div>'
+         });
+         infowindow.open(mapContainer, marker);
+
+         // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+         mapContainer.setCenter(coord);
+
+     {% endif %}
+      $(document).ready(function(){
+
+        $('#handleLike').click((e)=>{
+          e.preventDefault();
+          var self =$('#handleLike');
+
+       if(!self.hasClass('active')){
+          $.ajax({
+            url: '/shops/like/'+ parseInt({{shop.id}}),
+            method: 'post'
+          }).done((result)=>{
+            if(result.status.length)
+              {
+                self.addClass('active')
+                var count = parseInt(self.children('span').text())
+                self.children('span').text(count + 1)
+              }
+            else
+              alert('이미 좋아요를 눌렀습니다.')
+          }).fail((err)=>{
+            console.log('!'+err)
+          })
+        }else{
+          $.ajax({
+            url: '/shops/like/'+ {{shop.id}},
+            method: 'delete'
+          }).done(()=>{
+            self.removeClass('active')
+           var count = parseInt(self.children('span').text())
+                self.children('span').text(count < 1 ? count : count - 1)
+          }).fail(()=>{})
+        }
+
+        })
+
+
+       // {% if not sameShops %}
+      //    alert('장바구니에는 같은 가게의 메뉴만 담을 수 있습니다. 장바구니 삭제후 진행해주세요.');
+      //  {% endif %}
+
+        $('.btn-cart').click(function(){
+
+          var cartCounter = parseInt($('.cart-item-counter').text());
+          if(!cartCounter){
+            alert('장바구니에 담긴 메뉴가 없습니다.');
+          }else{
+            location.href = '/cart';
+          }
+
+        });
+
+        $('.getCart').click(function(e){
+
+          //링크 이동 방지
+          e.preventDefault();
+          if(!{{sameShops}})
+             alert('장바구니에는 같은 가게의 메뉴만 담을 수 있습니다. 장바구니 삭제후 진행해주세요.');
+
+          else if(confirm('장바구니에 담겠습니까?')){
+
+             //장바구니에 담길 ID,가격,이름을 받는다
+              var shop_id = {{ shop.id }};
+              var menu_id = $(this).attr('menu_id');
+              var name = $(this).attr('name');
+              var price = $(this).attr('price');
+
+              var cartList = {};
+
+              if( getCookie('cartList') ){
+                  //쿠키에서 검색후 있으면 json 파싱함
+                  cartList = JSON.parse(getCookie('cartList'));
+              }
+
+              cartList[menu_id] = {
+                shop_id,
+                menu_id,
+                name,
+                price
+              };
+
+              // string으로 저장되는데 나중에 {}형식으로 받기위해 stringfy로 저장
+              setCookie( "cartList" , JSON.stringify(cartList) , 3 );
+              $('.cart-item-counter').text( Object.keys(cartList).length );
+              alert("장바구니에 담았습니다.");
+
+
+          }
+        });
+      });
+</script>
+{% endblock %}

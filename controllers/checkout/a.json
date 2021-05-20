@@ -1,0 +1,16 @@
+{
+    "imp_uid": "imo_123", 
+      "merchant_uid": "merchant_210430",
+      "paid_amount":"12000", 
+      "apply_num": "1122210430", 
+
+      "buyer_email":"testuser@naver.com",
+      "buyer_name": "tester", 
+      "buyer_tel": "010-0000-0000", 
+      "buyer_addr": "서울시 송파동", 
+
+      "buyer_postcode": "32104", 
+        "shop_id": 7, 
+        "menuArray": [1,3] ,
+      "status": "결제완료"
+}
