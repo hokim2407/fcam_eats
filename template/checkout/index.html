@@ -26,7 +26,7 @@ block content -%}
   </div>
 
   <form action="" id="orderForm">
-    <input type="hidden" name="shop_id" value="{{shop_id}}" />
+    <input type="hidden" name="shop_id" value="{{ shop_id }}" />
     <input type="hidden" name="menuArray" value="{{ menuArray | dump }}" />
     <h3 class="text-center">배송지정보</h3>
     <table
@@ -105,7 +105,7 @@ block content -%}
          var menuArray = $('input[name=menuArray]').val();
 
          var IMP = window.IMP;
-         IMP.init('imp07628871');
+         IMP.init('imp71394683');
          //아임호트 사이트에서 받아온다( http://www.iamport.kr/ )
 
          IMP.request_pay({
