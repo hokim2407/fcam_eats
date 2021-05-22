@@ -1,7 +1,8 @@
 const { Router } = require("express");
 const router = Router();
 
-router.get("/", (req, res) => {
+const loginRequired = require("../../middleware/loginRequired");
+router.get("/", loginRequired, (req, res) => {
   if (!req.isAuthenticated())
     res.send(
       '<script>alert("로그인이 필요한 서비스입니다.");\
