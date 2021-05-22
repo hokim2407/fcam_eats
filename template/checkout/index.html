@@ -119,11 +119,11 @@ block content -%}
              buyer_tel : buyer_tel,
              buyer_addr : buyer_addr,
              buyer_postcode : buyer_postcode,
-             m_redirect_url : `http://localhost:3000/checkout/complete?menuArray=${menuArray}&shop_id=${shop_id}`
+             m_redirect_url : `https://www.mygoodaloe.shop/checkout/complete?menuArray=${menuArray}&shop_id=${shop_id}`
          }, function(rsp){
              if ( rsp.success ) {
 
-                 document.location.href = "/checkout/complete?imp_uid=" + rsp.imp_uid;
+                 document.location.href = "https://www.mygoodaloe.shop/checkout/complete?imp_uid=" + rsp.imp_uid;
 
              } else {
                  let msg = '결제에 실패하였습니다.';
