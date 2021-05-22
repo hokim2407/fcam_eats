@@ -47,6 +47,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: "shop_id",
       targetKey: "id",
     });
+    Checkout.belongsTo(models.User, {
+      as: "User",
+      foreignKey: "user_id",
+      targetKey: "id",
+    });
   };
 
   // 년-월-일

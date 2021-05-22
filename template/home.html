@@ -93,113 +93,127 @@ content -%}
     </div>
   </section>
 </main>
+
+<!-- delivery check -->
+<div class="container delivery-check" hidden>
+  <div class="row">
+    <div class="col-xs-12 sub-title1">주문하신 음식이 이동중입니다.</div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
 <script src="/static/js/kakaomap.js"></script>
 <script>
 
-        var shops = {{ shops | dump | safe }}
+  var socket = io();
+  socket.on('server order', function(){
+    $('.delivery-check').removeAttr('hidden');
+  });
 
-    window._userGeo = {
-      lat: {{ map_api.default.lat }},
-      lng: {{ map_api.default.lng }}
+          var shops = {{ shops | dump | safe }}
 
-    }
+      window._userGeo = {
+        lat: {{ map_api.default.lat }},
+        lng: {{ map_api.default.lng }}
 
-
-        var coord = new kakao.maps.LatLng(
-                     window._userGeo.lat ,
-                      window._userGeo.lng
-                   );
-           var mapContainer = new kakao.maps.Map(
-               document.getElementById("map_area"),
-               {
-                   center:coord, // 지도의 중심좌표
-                   level: 3 // 지도의 확대 레벨
-               }
-           );
-              // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-              mapContainer.setCenter(coord);
-
-          var positions = {};
-
-        // 마커이미지의 주소입니다
-                 var imageSrc = "/static/images/icon_pointer.png";
-
-                 // 마커 이미지의 이미지 크기 입니다
-                 var imageSize = new kakao.maps.Size(40, 46);
-
-                 // 마커 이미지를 생성합니다
-                 var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+      }
 
 
-        for(var key in shops)
-        {
-          if(shops[key].geo != null)
-          {
-            positions[key] = {
-              id : shops[key].id,
-              name : shops[key].name,
-              coord : new kakao.maps.LatLng(
-                        shops[key].geo.coordinates[1],
-                         shops[key].geo.coordinates[0]
-                    )
-            }
-                 // 결과값으로 받은 위치를 마커로 표시합니다
-                 var marker = new kakao.maps.Marker({
-                   map: mapContainer,
-                   position: positions[key].coord,
-                   image: markerImage
-                 });
-
-                 // 인포윈도우로 장소에 대한 설명을 표시합니다
-                 var infowindow = new kakao.maps.InfoWindow({
-                   content:
-                     `<div style="width:150px;text-align:center;padding:6px 2px;">
-                    <a href="/shops/${positions[key].id}"> ${positions[key].name}</a>
-                     </div>`
-                 });
-                 infowindow.open(mapContainer, marker);
-          }
-        }
-                 // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                 mapContainer.setCenter(coord);
-
-
-      if(navigator.geolocation)
-      {
-       navigator.geolocation.getCurrentPosition(
-         (position)=>{
-
-                    window._userGeo.lat =  position.coords.latitude;
-                      window._userGeo.lng = position.coords.longitude;
-         var coord = new kakao.maps.LatLng(
-                       window._userGeo.lat,
+          var coord = new kakao.maps.LatLng(
+                       window._userGeo.lat ,
                         window._userGeo.lng
                      );
-        console.log(position.coords.latitude +'+'+ position.coords.longitude);
-         mapContainer.setCenter(coord);
-       },
-       (error)=>{
-         if(error.code== 1)
-          alert('위치정보를 허용해주세요.')
-         if(error.code== 2)
-          alert('유효하지 않은 위치입니다.')
-         if(error.code== 3)
-          alert('연결 시간이 초과되었습니다.')
-       },
-        {timeout:3000})
+             var mapContainer = new kakao.maps.Map(
+                 document.getElementById("map_area"),
+                 {
+                     center:coord, // 지도의 중심좌표
+                     level: 3 // 지도의 확대 레벨
+                 }
+             );
+                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                mapContainer.setCenter(coord);
 
-      }
-      else{
-        alert('지도 api를 사용할 수 없습니다.');
-      }
+            var positions = {};
+
+          // 마커이미지의 주소입니다
+                   var imageSrc = "/static/images/icon_pointer.png";
+
+                   // 마커 이미지의 이미지 크기 입니다
+                   var imageSize = new kakao.maps.Size(40, 46);
+
+                   // 마커 이미지를 생성합니다
+                   var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
 
 
-    $(document).ready(function(){
-  $('#orderByNear').click(()=>{
-    location.href = `/?lat=${window._userGeo.lat}&lng=${window._userGeo.lng}`
-  })
+          for(var key in shops)
+          {
+            if(shops[key].geo != null)
+            {
+              positions[key] = {
+                id : shops[key].id,
+                name : shops[key].name,
+                coord : new kakao.maps.LatLng(
+                          shops[key].geo.coordinates[1],
+                           shops[key].geo.coordinates[0]
+                      )
+              }
+                   // 결과값으로 받은 위치를 마커로 표시합니다
+                   var marker = new kakao.maps.Marker({
+                     map: mapContainer,
+                     position: positions[key].coord,
+                     image: markerImage
+                   });
 
+                   // 인포윈도우로 장소에 대한 설명을 표시합니다
+                   var infowindow = new kakao.maps.InfoWindow({
+                     content:
+                       `<div style="width:150px;text-align:center;padding:6px 2px;">
+                      <a href="/shops/${positions[key].id}"> ${positions[key].name}</a>
+                       </div>`
+                   });
+                   infowindow.open(mapContainer, marker);
+            }
+          }
+                   // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                   mapContainer.setCenter(coord);
+
+
+        if(navigator.geolocation)
+        {
+         navigator.geolocation.getCurrentPosition(
+           (position)=>{
+
+                      window._userGeo.lat =  position.coords.latitude;
+                        window._userGeo.lng = position.coords.longitude;
+           var coord = new kakao.maps.LatLng(
+                         window._userGeo.lat,
+                          window._userGeo.lng
+                       );
+          console.log(position.coords.latitude +'+'+ position.coords.longitude);
+           mapContainer.setCenter(coord);
+         },
+         (error)=>{
+           if(error.code== 1)
+            alert('위치정보를 허용해주세요.')
+           if(error.code== 2)
+            alert('유효하지 않은 위치입니다.')
+           if(error.code== 3)
+            alert('연결 시간이 초과되었습니다.')
+         },
+          {timeout:3000})
+
+        }
+        else{
+          alert('지도 api를 사용할 수 없습니다.');
+        }
+
+
+      $(document).ready(function(){
+    $('#orderByNear').click(()=>{
+      location.href = `/?lat=${window._userGeo.lat}&lng=${window._userGeo.lng}`
     })
+
+      })
 </script>
 
 {% endblock %}

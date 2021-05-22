@@ -106,7 +106,6 @@ block content -%}
 
          var IMP = window.IMP;
          IMP.init('imp71394683');
-         //아임호트 사이트에서 받아온다( http://www.iamport.kr/ )
 
          IMP.request_pay({
              pg : 'inicis',
@@ -119,11 +118,11 @@ block content -%}
              buyer_tel : buyer_tel,
              buyer_addr : buyer_addr,
              buyer_postcode : buyer_postcode,
-             m_redirect_url : `https://www.mygoodaloe.shop/checkout/complete?menuArray=${menuArray}&shop_id=${shop_id}`
+             m_redirect_url : `{{domain}}/checkout/complete?menuArray=${menuArray}&shop_id=${shop_id}&user_id={{currentUser.id}}`
          }, function(rsp){
              if ( rsp.success ) {
 
-                 document.location.href = "https://www.mygoodaloe.shop/checkout/complete?imp_uid=" + rsp.imp_uid;
+                 document.location.href = `{{domain}}/checkout/complete?menuArray=${menuArray}&shop_id=${shop_id}&user_id={{currentUser.id}}&imp_uid=${rsp.imp_uid}`;
 
              } else {
                  let msg = '결제에 실패하였습니다.';

@@ -2,7 +2,7 @@ require("../helpers/removeByValue")();
 
 module.exports = (io) => {
   let userList = [];
-  let userSockerId = {};
+  let userSocketId = {};
 
   io.on("connection", (socket) => {
     const session = socket.request.session.passport;
@@ -10,7 +10,6 @@ module.exports = (io) => {
 
     if (typeof user == "undefined") return;
     userSocketId[user.id] = socket.id;
-
     socket.on("client order", (data) => {
       const socketId = userSocketId[data.user_id];
       socket.to(socketId).emit("server order");

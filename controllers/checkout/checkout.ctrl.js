@@ -50,9 +50,9 @@ exports.get_complete = async (req, res) => {
       buyer_addr: iamportData.data.buyer_addr,
       buyer_postcode: iamportData.data.buyer_postcode,
       shop_id: req.query.shop_id,
+      user_id: req.query.user_id,
       status: "결재완료",
     });
-
     const menuArray = JSON.parse(req.query.menuArray);
 
     async function asyncSetMenu(menu_id) {
